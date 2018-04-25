@@ -13,7 +13,7 @@ class Node {
 	}
 }
 
-class MaxBst {
+public class Crap {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		int t = sc.nextInt();
@@ -82,47 +82,67 @@ class MaxBst {
  * data) { this.data = data; this.left = null; this.right = null; } }
  */
 
+class BstAttrs {
+	Integer size;
+	Integer maxSize;
+	Integer minVal;
+	Integer maxVal;
+}
+
 class GfG {
-	public Integer[] largestBstRecursive(Node node, Integer maxBstSz, Integer lLimit, Integer rLimit) {
-		Integer r[] = new Integer[2];
-		Integer curBstSz = 0;
+	public BstAttrs largestBstRecursive(Node node, Integer maxBstSz) {
+		BstAttrs r = new BstAttrs();
+		Integer curBstSz = 1;
+		Integer minVal = node.data;
+		Integer maxVal = node.data;
+		Integer lSz = 0;
+		Integer rSz = 0;
 
-		System.out.println(" nodo " + node.data + " ll " + lLimit + " rl " + rLimit);
-		if (node.data > lLimit && node.data < rLimit) {
-			if (node.left != null) {
-				System.out.println(" hi " + node.left.data);
+//		System.out.println(" nodo " + node.data + " maxsz " + maxBstSz);
+		if (node.left != null) {
+//			System.out.println(" hi " + node.left.data);
 
-				Integer rTmp[] = largestBstRecursive(node.left, maxBstSz, lLimit, node.data);
-				if (rTmp[0] > 0 && node.left.data < node.data) {
-					curBstSz += rTmp[0];
-				} else {
-					curBstSz = 0;
-				}
-				maxBstSz = java.lang.Math.max(maxBstSz, rTmp[1]);
+			BstAttrs rTmp = largestBstRecursive(node.left, maxBstSz);
+			if (rTmp.size != null && rTmp.size > 0 && node.left.data < node.data && rTmp.maxVal != null
+					&& rTmp.maxVal < node.data) {
+				lSz = rTmp.size;
+				minVal = java.lang.Math.min(minVal, rTmp.minVal);
+			} else {
+				curBstSz = null;
+				minVal = null;
 			}
-			if (node.right != null) {
-				System.out.println(" hd " + node.right.data);
-
-				Integer rTmp[] = largestBstRecursive(node.right, maxBstSz, node.data, rLimit);
-				if (curBstSz > 0 && rTmp[0] > 0 && node.right.data > node.data) {
-					curBstSz += rTmp[0];
-				} else {
-					curBstSz = 0;
-				}
-				maxBstSz = java.lang.Math.max(maxBstSz, rTmp[1]);
-			}
+			maxBstSz = java.lang.Math.max(maxBstSz, rTmp.maxSize);
 		}
-		maxBstSz = java.lang.Math.max(maxBstSz, curBstSz);
-		r[0] = curBstSz;
-		r[1] = maxBstSz;
-		System.out.println("r node " + node.data + " " + r[0] + " " + r[1]);
+		if (node.right != null) {
+//			System.out.println(" hd " + node.right.data);
+
+			BstAttrs rTmp = largestBstRecursive(node.right, maxBstSz);
+			if (curBstSz != null && curBstSz > 0 && rTmp.size != null && rTmp.size > 0 && node.right.data > node.data
+					&& rTmp.minVal != null && rTmp.minVal > node.data) {
+				rSz = rTmp.size;
+				maxVal = java.lang.Math.max(maxVal, rTmp.maxVal);
+			} else {
+				curBstSz = null;
+				maxVal = null;
+			}
+			maxBstSz = java.lang.Math.max(maxBstSz, rTmp.maxSize);
+		}
+		if (curBstSz != null) {
+			curBstSz += lSz + rSz;
+			maxBstSz = java.lang.Math.max(maxBstSz, curBstSz);
+		}
+		r.size = curBstSz;
+		r.maxSize = maxBstSz;
+		r.minVal = minVal;
+		r.maxVal = maxVal;
+//		System.out.println("r node " + node.data + " " + r.size + " " + r.maxSize);
 		return r;
 	}
 
 	public int largestBst(Node node) {
-		Integer r[] = largestBstRecursive(node, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		BstAttrs r = largestBstRecursive(node, 1);
 		// System.out.println("a "+r[0]+ " b "+r[1]);
-		System.out.println("" + r[1]);
-		return r[1];
+		System.out.println("" + r.maxSize);
+		return r.maxSize;
 	}
 }
